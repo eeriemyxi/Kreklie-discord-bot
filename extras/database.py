@@ -16,40 +16,49 @@ class Database_Listener(commands.Cog):
         self.checked = []
     @commands.Cog.listener()
     async def on_message(self, msg):
-        if (userid:= msg.author.id in self.checked):
+        if (userid:= msg.author.id in self.checked) or msg.author.bot:
             return
         if (check:= Database().checkuser(msg, userdb)):
             self.checked.append(msg.author.id)
-
+        self.bot.process_commands
 class Database:
     def __init__(self) -> None:
-        self.getembedcolor = [i.strip() for i in os.getenv('DEFAULT_EMBED_COLOR').split(',')]
-
+        self.getembedcolor = [int(i) for i in [ii.strip() for ii in os.getenv('DEFAULT_EMBED_COLOR').split(',')]]
     def checkuser(self, ctx, db):
         self.userid = str(ctx.author.id)
         if not (cache := db.get(self.userid)):
             db.put(data={
+                'info': {
+                    'username': str(ctx.author)
+                },
                 'settings': {
                     'embedcolor': self.getembedcolor,
-                    'ghostping': 'on'
+                    'ghostping': 'on',
                 }
             },
                    key=self.userid)
             return True
         elif cache.get('settings'):
-            if not cache.get('embedcolor'):
+            if not cache['settings'].get('embedcolor'):
                 db.update(updates={'settings.embedcolor': self.getembedcolor},
                           key=self.userid)
-            if not cache.get('ghostping'):
+            if not cache['settings'].get('ghostping'):
                 db.update(updates={'settings.ghostping': 'on'},
                           key=self.userid)
             return True
+        elif cache.get('info'):
+            if not cache['info'].get('username'):
+                db.update(updates = {'settings.username': str(ctx.author)},
+                          key=self.userid)
         else:
             db.put(
                 {
+                    'info':{
+                        'username':str(ctx.author)
+                    },
                     "settings": {
                         'embedcolor': self.getembedcolor,
-                        'ghostping': 'on'
+                        'ghostping': 'on',
                     }
                 },
                 key=self.userid)

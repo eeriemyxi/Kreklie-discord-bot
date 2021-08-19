@@ -64,10 +64,13 @@ class Events(commands.Cog):
         else:
             if hasattr(ctx.command, 'on_error'):
                 return
+            exception = traceback.format_exc()
+            print(exception)
             await ctx.send(f'''```
-{traceback.format_exc()}
-{error}
+{exception}
             ```''')
+            
+            raise error
 
     @commands.Cog.listener()
     async def on_message(self, ctx):

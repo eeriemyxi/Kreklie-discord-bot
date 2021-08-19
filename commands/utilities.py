@@ -189,24 +189,11 @@ class Utilities(commands.Cog):
         description=
         'Turn off ghost pings. You will not get notified when someone mentions you and deletes the message but if you ghost ping someone, they won\'t get notified either.'
     )
-    async def ghostping(self, ctx, bool_value=None):
-        if not bool_value:
-            await ctx.send(embed=easyembed.error(
-                title='Error',
-                desc='Please specify if you want to turn it `off` or `on`',
-                ctx=ctx))
-            await ctx.send_help()
-            return
+    async def ghostping(self, ctx, bool_value):
         if bool_value.lower() in ('on', 'off'):
             bool_value = bool_value.lower()
             userid = str(ctx.author.id)
-            if not userdb.get(str(userid)):
-                userdb.put(key=str(userid),
-                           data={'settings': {
-                               'ghostping': bool_value
-                           }})
-            else:
-                userdb.update(key=str(userid),
+            userdb.update(key=str(userid),
                               updates={'settings.ghostping': bool_value})
             await ctx.send(embed=discord.Embed(
                 color=easyembed.getcolor(ctx),
@@ -238,7 +225,7 @@ class Utilities(commands.Cog):
                     f'RGB values can\'t be higher than 255.', ctx))
                 return
         userid = str(ctx.author.id)
-        userdb.put({'settings':{'embedcolor:':[r,g,b]}}, userid)
+        userdb.update(updates={'settings.embedcolor':[r,g,b]},key = userid)
         await ctx.send(embed=discord.Embed(
             color=discord.Color.from_rgb(*(r, g, b)),
             title='Done!',
