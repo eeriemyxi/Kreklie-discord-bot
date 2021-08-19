@@ -5,6 +5,7 @@ from commands.utilities import Utilities
 from events import Events
 from commands.server import Server
 import logging
+from extras.database import Database_Listener
 logging.basicConfig(level=logging.INFO)
 logging.getLogger("discord").setLevel(logging.WARNING)
 global log ; log = logging.info
@@ -14,6 +15,8 @@ class Main(commands.Cog):
 
 log('Loading cogs')
 def setup(bot):
+    bot.add_cog(Database_Listener(bot))
+    log('Database Listener is now Listening.')
     bot.add_cog(Utilities(bot))
     log('Utilities cog added.')
     bot.add_cog(Fun(bot))
