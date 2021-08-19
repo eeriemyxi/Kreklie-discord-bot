@@ -14,7 +14,6 @@ class Fun(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.calls = []
-
     @commands.command(
         description=
         'Shows a random person that doesn\'t exist. Thanks to thispersondoesnotexist.com'
