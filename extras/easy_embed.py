@@ -13,7 +13,6 @@ class easyembed(discord.Embed):
     def error(self, title, desc,ctx):
         id = str(ctx.author.id)
         color = db.get(id)['settings']['embedcolor']
-        print(color)
         return self(title=title,
                     description=desc,
                     color=discord.Color.from_rgb(*(tuple(color))))
