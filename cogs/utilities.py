@@ -231,3 +231,5 @@ class Utilities(commands.Cog):
             title='Done!',
             description=
             f'Embed color has been changed to RGB color value `{r},{g},{b}`'))
+def setup(bot):
+    bot.add_cog(Utilities(bot))

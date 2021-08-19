@@ -38,3 +38,5 @@ class Server(commands.Cog):
             description=
             f'The prefix for this server has been updated to `{prefix}`.'))
         return
+def setup(bot):
+    bot.add_cog(Server(bot))

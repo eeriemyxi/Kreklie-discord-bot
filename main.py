@@ -1,6 +1,5 @@
 import logging
-
-from discord import activity
+import pkgutil
 logging.basicConfig(level=logging.INFO)
 logging.getLogger("discord").setLevel(logging.WARNING)
 global log ; log = logging.info
@@ -34,6 +33,8 @@ client = commands.Bot(command_prefix=return_command,
                       intents=intents,
                       owner_id=os.getenv('OWNER_ID'),
                       activity=discord.Activity(type=discord.ActivityType.watching, name='kk help'))
-client.load_extension('load_commands')
+for extension in pkgutil.iter_modules(['cogs']):
+    client.load_extension(f'cogs.{extension.name}')
+    log(f'Loaded cog: {str(extension.name).capitalize()}')
 log('Trying to login.')
 client.run(os.getenv('BOT_TOKEN'))

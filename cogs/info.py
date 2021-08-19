@@ -173,4 +173,5 @@ class Information(commands.Cog):
             color = easyembed.getcolor(ctx)
         ).set_image(url=ctx.guild.icon_url)
         await ctx.send(embed=embed)
-    
+def setup(bot):
+    bot.add_cog(Information(bot))

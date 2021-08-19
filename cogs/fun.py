@@ -152,3 +152,5 @@ class Fun(commands.Cog):
         embed.add_field(name='Password', value=password, inline=False)
         embed.add_field(name='IP Address', value=ipaddress, inline=False)
         await msg.edit(embed=embed)
+def setup(bot):
+    bot.add_cog(Fun(bot))

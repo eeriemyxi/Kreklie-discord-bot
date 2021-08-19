@@ -86,3 +86,5 @@ class Events(commands.Cog):
             return
         else:
             guilddb.put(key=guildid, data={'prefix': 'kk '})
+def setup(bot):
+    bot.add_cog(Events(bot))
