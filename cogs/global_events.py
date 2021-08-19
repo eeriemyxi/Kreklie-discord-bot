@@ -1,6 +1,6 @@
 import discord, os
 from discord.ext import commands
-from discord.ext.commands.errors import CommandNotFound, MissingRequiredArgument, RoleNotFound
+from discord.ext.commands.errors import CheckFailure, CommandNotFound, MissingRequiredArgument, RoleNotFound
 from deta import Deta
 from extras.easy_embed import easyembed
 import traceback
@@ -64,6 +64,8 @@ class Events(commands.Cog):
                 'Missing required argument.',
                 'Please have a look at the message below.', ctx))
             await ctx.send_help(ctx.command)
+        elif isinstance(error, CheckFailure):
+            pass
         else:
             if hasattr(ctx.command, 'on_error'):
                 return
@@ -71,7 +73,6 @@ class Events(commands.Cog):
             error_traceback = error.__traceback__
             error = "".join(traceback.format_exception(error_type, error, error_traceback))
             await ctx.send(f"""```py\n{error}```""")
-
 
     @commands.Cog.listener()
     async def on_message(self, ctx):

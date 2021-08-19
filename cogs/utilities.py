@@ -28,7 +28,10 @@ class Utilities(commands.Cog):
             await ctx.send_help('calc')
         else:
             result = calc.Parser().parse(equation).evaluate({})
-            await ctx.send(result)
+            result_title = equation
+            if len(equation) > 20: result_title = equation[0:30] + '...'
+            await ctx.send(embed=easyembed.simple(
+                title=f'Calculation of {result_title}', desc=result, ctx=ctx))
 
     @commands.command(
         description=
@@ -168,7 +171,8 @@ class Utilities(commands.Cog):
     @commands.command(
         description='Shows 10 search results of DuckDuckGo Search Engine.')
     async def ddg(self, ctx, *, keyword):
-        embed = discord.Embed(color=easyembed.getcolor(ctx),title='DuckDuckGo - Search results')
+        embed = discord.Embed(color=easyembed.getcolor(ctx),
+                              title='DuckDuckGo - Search results')
         if keyword:
             results = ddg(keyword, max_results=10)
             for result in results:
@@ -179,7 +183,8 @@ class Utilities(commands.Cog):
                     inline=False)
             await ctx.send(embed=embed)
 
-    @commands.group(aliases=['stgs'],description='Turn off or on some unnecessary stuff.')
+    @commands.group(aliases=['stgs'],
+                    description='Turn off or on some unnecessary stuff.')
     async def settings(self, ctx):
         if ctx.invoked_subcommand is None:
             await ctx.send_help('settings')
@@ -194,7 +199,7 @@ class Utilities(commands.Cog):
             bool_value = bool_value.lower()
             userid = str(ctx.author.id)
             userdb.update(key=str(userid),
-                              updates={'settings.ghostping': bool_value})
+                          updates={'settings.ghostping': bool_value})
             await ctx.send(embed=discord.Embed(
                 color=easyembed.getcolor(ctx),
                 title='Done!',
@@ -225,11 +230,13 @@ class Utilities(commands.Cog):
                     f'RGB values can\'t be higher than 255.', ctx))
                 return
         userid = str(ctx.author.id)
-        userdb.update(updates={'settings.embedcolor':[r,g,b]},key = userid)
+        userdb.update(updates={'settings.embedcolor': [r, g, b]}, key=userid)
         await ctx.send(embed=discord.Embed(
             color=discord.Color.from_rgb(*(r, g, b)),
             title='Done!',
             description=
             f'Embed color has been changed to RGB color value `{r},{g},{b}`'))
+
+
 def setup(bot):
     bot.add_cog(Utilities(bot))

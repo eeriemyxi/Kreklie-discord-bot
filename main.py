@@ -1,15 +1,19 @@
 import logging
-import pkgutil
 logging.basicConfig(level=logging.INFO)
 logging.getLogger("discord").setLevel(logging.WARNING)
 global log ; log = logging.info
+
 log('Script Started.')
+
+import pkgutil
 import discord, os
 from discord.ext import commands
 from dotenv import load_dotenv, find_dotenv
-load_dotenv(find_dotenv())
 from deta import Deta
 log('Modules imported')
+
+
+load_dotenv(find_dotenv())
 deta = Deta(os.getenv('DATABASE_KEY'))
 guilddb = deta.Base('guild_data')
 intents = discord.Intents.default()
@@ -37,4 +41,6 @@ for extension in pkgutil.iter_modules(['cogs']):
     client.load_extension(f'cogs.{extension.name}')
     log(f'Loaded cog: {str(extension.name).capitalize()}')
 log('Trying to login.')
+
+
 client.run(os.getenv('BOT_TOKEN'))
