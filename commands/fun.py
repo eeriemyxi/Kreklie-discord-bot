@@ -135,7 +135,7 @@ class Fun(commands.Cog):
             'crapboy', 'crap69', 'gaming', 'gaymer', 'jesus', 'gamingboy',
             'yoyo', 'pussy', 'cute', 'tranny', 'peasant'
         ]
-        email = random.choices(word_list,2) + str(
+        email = "".join(random.choices(word_list,k=2)) + str(
             random.randint(0000, 5000)) + random.choice([
                 '@gmail.com', '@outlook.com', '@yahoo.com', '@hotmail.com',
                 'mail.com'

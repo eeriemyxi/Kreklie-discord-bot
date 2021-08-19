@@ -14,16 +14,23 @@ class Database_Listener(commands.Cog):
     def __init__(self, bot) -> None:
         self.bot = bot
         self.checked = []
+
     @commands.Cog.listener()
     async def on_message(self, msg):
-        if (userid:= msg.author.id in self.checked) or msg.author.bot:
+        if (userid := msg.author.id in self.checked) or msg.author.bot:
             return
-        if (check:= Database().checkuser(msg, userdb)):
+        if (check := Database().checkuser(msg, userdb)):
             self.checked.append(msg.author.id)
         self.bot.process_commands
+
+
 class Database:
     def __init__(self) -> None:
-        self.getembedcolor = [int(i) for i in [ii.strip() for ii in os.getenv('DEFAULT_EMBED_COLOR').split(',')]]
+        self.getembedcolor = [
+            int(i) for i in
+            [ii.strip() for ii in os.getenv('DEFAULT_EMBED_COLOR').split(',')]
+        ]
+
     def checkuser(self, ctx, db):
         self.userid = str(ctx.author.id)
         if not (cache := db.get(self.userid)):
@@ -48,13 +55,13 @@ class Database:
             return True
         elif cache.get('info'):
             if not cache['info'].get('username'):
-                db.update(updates = {'settings.username': str(ctx.author)},
+                db.update(updates={'settings.username': str(ctx.author)},
                           key=self.userid)
         else:
             db.put(
                 {
-                    'info':{
-                        'username':str(ctx.author)
+                    'info': {
+                        'username': str(ctx.author)
                     },
                     "settings": {
                         'embedcolor': self.getembedcolor,

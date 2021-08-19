@@ -4,6 +4,7 @@ from discord.ext.commands.errors import CommandNotFound, MissingRequiredArgument
 from deta import Deta
 from extras.easy_embed import easyembed
 import traceback
+
 deta = Deta(os.getenv('DATABASE_KEY'))
 userdb = deta.Base('user_data')
 guilddb = deta.Base('guild_data')
@@ -59,7 +60,9 @@ class Events(commands.Cog):
                                                title='Not found',
                                                description=f'Role not found.'))
         elif isinstance(error, MissingRequiredArgument):
-            await ctx.send(embed = easyembed.error('Missing required argument.', 'Please have a look at the message below.', ctx))
+            await ctx.send(embed=easyembed.error(
+                'Missing required argument.',
+                'Please have a look at the message below.', ctx))
             await ctx.send_help(ctx.command)
         else:
             if hasattr(ctx.command, 'on_error'):
@@ -69,7 +72,7 @@ class Events(commands.Cog):
             await ctx.send(f'''```
 {exception}
             ```''')
-            
+
             raise error
 
     @commands.Cog.listener()
