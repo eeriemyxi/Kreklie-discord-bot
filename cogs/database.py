@@ -17,11 +17,11 @@ class Database_Listener(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, msg):
-        if (userid := msg.author.id in self.checked) or msg.author.bot:
+        if (userid := msg.author.id in self.checked):
             return
         if (check := Database().checkuser(msg, userdb)):
             self.checked.append(msg.author.id)
-        self.bot.process_commands
+        self.client.process_commands()
 
 
 class Database:
@@ -75,3 +75,5 @@ class Database:
                 },
                 key=self.userid)
             return True
+def setup(bot):
+    bot.add_cog(Database_Listener(bot))

@@ -1,7 +1,7 @@
 import os
 import discord
 from deta import Deta
-from extras.database import Database
+from cogs.database import Database
 
 deta = Deta(os.getenv('DATABASE_KEY'))
 db = deta.Base('user_data')

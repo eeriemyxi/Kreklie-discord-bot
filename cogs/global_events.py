@@ -78,6 +78,7 @@ class Events(commands.Cog):
     async def on_message(self, ctx):
         if ctx.author.bot:
             return
+        self.bot.process_commands()
 
     @commands.Cog.listener()
     async def on_guild_join(guild):

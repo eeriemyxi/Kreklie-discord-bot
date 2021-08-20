@@ -11,9 +11,9 @@ class Economy(commands.Cog):
     
     @commands.command(usage = '[User]', aliases = ('bal', 'wallet'), description = 'Shows your virtual balance.')
     async def balance(self, ctx, user: discord.User = None):
-        if user: user = user.id
-        else: user = ctx.author.id
-        
-
+        if user: userid = str(user.id)
+        else: userid = str(ctx.author.id) ; user = ctx.author
+        balance = userdb.get(userid)['info']['balance']
+        await ctx.send(embed = embed.simple(f'Virtual balance of {user.name}', f":coin: **{str(balance)}**", ctx))
 def setup(bot):
     bot.add_cog(Economy(bot))
