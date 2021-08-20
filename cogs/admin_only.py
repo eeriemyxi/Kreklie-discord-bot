@@ -1,5 +1,5 @@
 import discord ; from discord.ext import commands
-import os
+import os, pkgutil
 from extras.easy_embed import easyembed
 class AdminOnly(commands.Cog):
     def __init__(self, bot) -> None:
@@ -11,19 +11,44 @@ class AdminOnly(commands.Cog):
         return True
     @commands.command()
     async def reload(self, ctx, name: str):
+        if name.lower() == 'all':
+            try:
+                await ctx.send(embed = easyembed.error(
+                    f'Reloading all cogs',
+                    "", ctx
+                ))
+                logs = []
+                log = logs.append
+                for extension in pkgutil.iter_modules(['cogs']):
+                    try: self.bot.reload_extension(f'cogs.{extension.name}')
+                    except Exception as e: log(f'Failed to log cog {str(extension.name).capitalize()}. Error:\n{e}')
+                    else: log(f'Reloaded cog: {str(extension.name).capitalize()}')
+            except Exception: 
+                await ctx.send(embed = easyembed.error(
+                    "Couldn't reload",
+                    "", ctx
+                ))
+            else:
+                await ctx.send(embed = easyembed.simple(
+                    'Reloaded all cogs. Logs:',
+                    "\n".join(logs),
+                    ctx
+                ))
+                return
         try:
             await ctx.send(embed = easyembed.error(
                 f'Reloading cog "{name.capitalize()}"',
                 "", ctx
             ))
-            self.bot.reload_extension(f'cogs.{name}')
-            await ctx.send(embed = easyembed.error(
-                f'Cog "{name.capitalize()}" reloaded.',
-                "", ctx
-            ))
         except Exception: 
             await ctx.send(embed = easyembed.error(
                 "Couldn't reload",
+                "", ctx
+            ))
+        else:
+            self.bot.reload_extension(f'cogs.{name.lower()}')
+            await ctx.send(embed = easyembed.error(
+                f'Cog "{name.capitalize()}" reloaded.',
                 "", ctx
             ))
 
