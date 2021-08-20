@@ -1,6 +1,4 @@
 .env
 **/__pycache__
 *.pyc
-*.pyc
 /backup
-*.pyc
