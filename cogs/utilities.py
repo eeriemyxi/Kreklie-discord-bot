@@ -1,3 +1,4 @@
+from discord.embeds import EmptyEmbed
 from discord.errors import Forbidden
 from discord.ext import commands
 import discord, asyncio, os
@@ -20,85 +21,64 @@ class Utilities(commands.Cog):
 
     @commands.command(description='Calculator')
     async def calc(self, ctx, equation):
-        if not equation:
-            await ctx.send(embed=easyembed.error(
-                'Error',
-                'You forgot that you have to enter something that I could calculate.',
-                ctx))
-            await ctx.send_help('calc')
-        else:
-            result = calc.Parser().parse(equation).evaluate({})
-            result_title = equation
-            if len(equation) > 20: result_title = equation[0:30] + '...'
-            await ctx.send(embed=easyembed.simple(
-                title=f'Calculation of {result_title}', desc=result, ctx=ctx))
+        result = calc.Parser().parse(equation).evaluate({})
+        result_title = equation
+        if len(equation) > 20: result_title = equation[0:30] + '...'
+        await ctx.send(embed=easyembed.simple(
+            title=f'Calculation of {result_title}', desc=result, ctx=ctx))
 
-    @commands.command(
+    @commands.group(
         description=
-        'Convert binary to text or text to binary. This is how it\'s done:\nTo convert binary to text do .binary decode [text here] and to convert text to binary change "decode" to "encode".'
+        'Convert binary to text or text to binary. This is how it\'s done:\nTo convert binary to text do .binary decode <text here> and to convert text to binary change "decode" to "encode".'
     )
-    async def binary(self, ctx, answer=None, *, code=None):
-        if not answer:
+    async def binary(self, ctx):
+        if ctx.invoked_subcommand is None:
+            await ctx.send(embed = easyembed.error(
+                'Error',
+                'Please have a look at the message below to know how to use this command.', ctx
+            ))
+            await ctx.send_help(ctx.command)
+    @binary.command()
+    async def encode(self, ctx, *,code):
+        binary = ' '.join(
+        format(x, 'b') for x in bytearray(code, 'utf-8'))
+        await ctx.send(embed =
+            easyembed.simple(title='Result',
+                                desc=binary,
+                                ctx=ctx))
+    @binary.command()
+    async def decode(self, ctx, *, code):
+        try:
+            ascii_string = "".join([
+                chr(int(binary, 2))
+                for binary in code.split(" ")
+            ])
+        except Exception:
             await ctx.send(embed=easyembed.error(
-                'Missing argument.', 'You forgot to include codec.', ctx))
-        if answer and not code:
-            await ctx.send(embed=easyembed.error(
-                'Codec error',
-                'You forgot to include what you wanted to decode or encode.',
+                'Unable to decode',
+                'Sorry, something went wrong when I tried to decode it.',
                 ctx))
         else:
-            if code is not None:
-                answer = answer.lower()
-                if answer in ('encode', 'decode'):
-                    if answer == 'encode':
-                        binary = ' '.join(
-                            format(x, 'b') for x in bytearray(code, 'utf-8'))
-                        await ctx.send(binary)
-                    else:
-                        try:
-                            ascii_string = "".join([
-                                chr(int(binary, 2))
-                                for binary in code.split(" ")
-                            ])
-                        except Exception:
-                            await ctx.send(embed=easyembed.error(
-                                'Unable to decode',
-                                'Sorry, something went wrong when I tried to decode it.',
-                                ctx))
-                        else:
-                            await ctx.send(
-                                easyembed.simple(title='Result',
-                                                 desc=ascii_string,
-                                                 ctx=ctx))
-                else:
-                    await ctx.send(embed=easyembed.error(
-                        'Invalid value for argument',
-                        'Codec argument can either be "encode" or "decode".',
-                        ctx))
+            await ctx.send(embed =
+                easyembed.simple(title='Result',
+                                    desc=ascii_string,
+                                    ctx=ctx))
 
     @commands.command(description='Search the Oxford Dictionary.')
     async def oxford(self, ctx, keyword=None):
-        print('e')
-        if not keyword:
-            await ctx.send(
-                'You forgot to include which word you wanted to search.')
-        else:
-            pydict = PyDictionary()
-            meaning = pydict.meaning(keyword)
-            embed = discord.Embed(title='Search results')
-            embed.set_footer(text='Oxford Dictionary Search')
-            for m in meaning:
-                embed.add_field(name=m,
-                                value="\n".join(["- " + i
-                                                 for i in meaning[m]]),
-                                inline=False)
-            await ctx.channel.send(embed=embed)
+        pydict = PyDictionary()
+        meaning = pydict.meaning(keyword)
+        embed = discord.Embed(title='Search results', color = easyembed.getcolor(ctx))
+        embed.set_footer(text='Oxford Dictionary Search')
+        for m in meaning:
+            embed.add_field(name=m,
+                            value="\n".join(["- " + i
+                                                for i in meaning[m]]),
+                            inline=False)
+        await ctx.channel.send(embed=embed)
 
     @commands.command(description='Search something on Urban Dictionary.')
     async def urban(self, ctx, *, keyword=None):
-        if not keyword:
-            await ctx.send(easyembed.error('Error', 'Empty input.', ctx))
-
         def check(rect, usr):
             if usr.id == ctx.author.id:
                 if rect.message.channel.id == ctx.channel.id:
@@ -173,15 +153,14 @@ class Utilities(commands.Cog):
     async def ddg(self, ctx, *, keyword):
         embed = discord.Embed(color=easyembed.getcolor(ctx),
                               title='DuckDuckGo - Search results')
-        if keyword:
-            results = ddg(keyword, max_results=10)
-            for result in results:
-                embed.add_field(
-                    name=f'{result["title"]}',
-                    value=
-                    f'**- - - [Click here to visit]({result["href"]}) - - -**\n{result["body"]}',
-                    inline=False)
-            await ctx.send(embed=embed)
+        results = ddg(keyword, max_results=10)
+        for result in results:
+            embed.add_field(
+                name=f'{result["title"]}',
+                value=
+                f'**- - - [Click here to visit]({result["href"]}) - - -**\n{result["body"]}',
+                inline=False)
+        await ctx.send(embed=embed)
 
     @commands.group(aliases=['stgs'],
                     description='Turn off or on some unnecessary stuff.')
