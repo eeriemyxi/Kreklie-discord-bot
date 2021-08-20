@@ -36,7 +36,8 @@ class Database:
         if not (cache := db.get(self.userid)):
             db.put(data={
                 'info': {
-                    'username': str(ctx.author)
+                    'username': str(ctx.author),
+                    'balance': 1500
                 },
                 'settings': {
                     'embedcolor': self.getembedcolor,
@@ -57,11 +58,15 @@ class Database:
             if not cache['info'].get('username'):
                 db.update(updates={'settings.username': str(ctx.author)},
                           key=self.userid)
+            if not cache['info'].get('balance'):
+                db.update(updates = {'settings.balance': 1500}, key = self.userid)
+            return True
         else:
             db.put(
                 {
                     'info': {
-                        'username': str(ctx.author)
+                        'username': str(ctx.author),
+                        'balance': 1500
                     },
                     "settings": {
                         'embedcolor': self.getembedcolor,
