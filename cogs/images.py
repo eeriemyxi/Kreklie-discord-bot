@@ -16,8 +16,9 @@ class Images(commands.Cog):
     @animals.command(description = 'Shows a random image of a cat')
     async def cat(self, ctx):
         await ctx.send(embed = discord.Embed(color = easyembed.getcolor(ctx), title = 'Random image of a cat').set_image(url = animal_image.cat()))
-    @commands.command(description = 'Random images of food dishes')
+    @commands.group(description = 'Random images of food dishes and recipe search')
     async def foodporn(self, ctx):
         await ctx.send(embed = discord.Embed(color = easyembed.getcolor(ctx), title = 'Food porn').set_image(url = others.foodish()))
+
 def setup(bot):
     bot.add_cog(Images(bot))
