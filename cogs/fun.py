@@ -41,7 +41,7 @@ class Fun(commands.Cog):
             text = api.others.joke(safe=True)
         elif unsafe == 'unsafe':
             text = api.others.joke(safe=False)
-        embed = discord.Embed(title=text)
+        embed = discord.Embed(title=text, color = easyembed.getcolor(ctx))
         await ctx.send(embed=embed)
 
     @commands.group(description='Get random facts about animals.')

@@ -9,7 +9,7 @@ from PyDictionary import PyDictionary
 import py_expression_eval as calc
 from deta import Deta
 from extras.easy_embed import easyembed
-
+import base64
 deta = Deta(os.getenv('DATABASE_KEY'))
 userdb = deta.Base('user_data')
 guilddb = deta.Base('guild_data')
@@ -67,7 +67,8 @@ class Utilities(commands.Cog):
     @commands.command(description='Search the Oxford Dictionary.')
     async def oxford(self, ctx, keyword=None):
         pydict = PyDictionary()
-        meaning = pydict.meaning(keyword)
+        try:meaning = pydict.meaning(keyword)
+        except ValueError: await ctx.send(embed = easyembed.error('404', f'Word "{keyword} not found."', ctx)) ; return
         embed = discord.Embed(title='Search results', color = easyembed.getcolor(ctx))
         embed.set_footer(text='Oxford Dictionary Search')
         for m in meaning:
@@ -215,7 +216,27 @@ class Utilities(commands.Cog):
             title='Done!',
             description=
             f'Embed color has been changed to RGB color value `{r},{g},{b}`'))
-
-
+    @commands.group(description= 'Decode or encode to base64 string.')
+    async def base64(self, ctx):
+        if ctx.invoked_subcommand is None:
+            await ctx.send(embed = easyembed.error('Missing subcommand', 'Please have a look at the message below to get to know how to use it.', ctx))
+            await ctx.send_help(ctx.command)
+    @base64.command(usage = '<text here>', descrition = 'Encode text to base64 string')
+    async def encode(self, ctx, text):
+        await ctx.send(embed = easyembed.simple(
+            'Results',
+            base64.b64encode(bytes(text, 'utf-8')).decode('utf-8'),
+            ctx
+        ))
+    @base64.command(usage = '<Encoded text here>', description = 'Decode base64 string')
+    async def decode(self, ctx, code):
+        await ctx.send(embed = easyembed.simple(
+            'Results',
+            base64.b64decode(bytes(code, 'utf-8')).decode('utf-8'),
+            ctx
+        ))
+    @commands.command()
+    async def ping(self, ctx):
+        await ctx.send(embed = easyembed.simple('Bot response latency', f'{round(self.bot.latency * 1000)} milliseconds', ctx))
 def setup(bot):
     bot.add_cog(Utilities(bot))

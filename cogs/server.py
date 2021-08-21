@@ -1,3 +1,4 @@
+from extras.easy_embed import easyembed
 from discord import guild
 from discord.ext import commands
 import discord, deta, os
@@ -28,15 +29,16 @@ class Server(commands.Cog):
             prefix = 'kk '
         if len(prefix) > 5:
             await ctx.send(embed=discord.Embed(
-                title='The prefix is too long. It must be under 5 characters.')
-                           )
+                title='The prefix is too long. It must be under 5 characters.',
+                color = easyembed.getcolor(ctx)))
             return
         guildid = str(ctx.guild.id)
         guilddb.update(key=guildid, updates={'prefix': prefix})
         await ctx.send(embed=discord.Embed(
             title='Done!',
             description=
-            f'The prefix for this server has been updated to `{prefix}`.'))
+            f'The prefix for this server has been updated to `{prefix}`.',
+            color = easyembed.getcolor(ctx)))
         return
 def setup(bot):
     bot.add_cog(Server(bot))

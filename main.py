@@ -20,8 +20,8 @@ intents = discord.Intents.default()
 intents.members, intents.messages, intents.reactions = True, True, True
 
 
-def return_command(bot, msg):
-    if msg.channel == discord.DMChannel:
+def return_prefix(bot, msg):
+    if not isinstance(msg.channel,discord.DMChannel):
         guildid = str(msg.guild.id)
         check = guilddb.get(guildid)
         if check and 'prefix' in check:
@@ -32,7 +32,7 @@ def return_command(bot, msg):
     else: return commands.when_mentioned_or('kk ')(bot, msg)
 
 
-client = commands.Bot(command_prefix=return_command,
+client = commands.Bot(command_prefix=return_prefix,
                       help_command=commands.MinimalHelpCommand(),
                       intents=intents,
                       owner_id=os.getenv('OWNER_ID'),

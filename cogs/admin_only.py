@@ -11,6 +11,7 @@ class AdminOnly(commands.Cog):
         return True
     @commands.command()
     async def reload(self, ctx, name: str):
+        cogs = [extension.name for extension in pkgutil.iter_modules(['cogs']) if extension.name != 'admin_only']
         if name.lower() == 'all':
             try:
                 await ctx.send(embed = easyembed.error(
@@ -19,10 +20,10 @@ class AdminOnly(commands.Cog):
                 ))
                 logs = []
                 log = logs.append
-                for extension in pkgutil.iter_modules(['cogs']):
-                    try: self.bot.reload_extension(f'cogs.{extension.name}')
-                    except Exception as e: log(f'Failed to log cog {str(extension.name).capitalize()}. Error:\n{e}')
-                    else: log(f'Reloaded cog: {str(extension.name).capitalize()}')
+                for extension in cogs:
+                    try: self.bot.reload_extension(f'cogs.{extension}')
+                    except Exception as e: log(f'Failed to log cog {str(extension).capitalize()}. Error:\n{e}')
+                    else: log(f'Reloaded cog: {str(extension).capitalize()}')
             except Exception: 
                 await ctx.send(embed = easyembed.error(
                     "Couldn't reload",
@@ -35,24 +36,32 @@ class AdminOnly(commands.Cog):
                     ctx
                 ))
                 return
-        try:
-            await ctx.send(embed = easyembed.error(
-                f'Reloading cog "{name.capitalize()}"',
-                "", ctx
-            ))
-        except Exception: 
-            await ctx.send(embed = easyembed.error(
-                "Couldn't reload",
-                "", ctx
-            ))
-        else:
-            self.bot.reload_extension(f'cogs.{name.lower()}')
-            await ctx.send(embed = easyembed.error(
-                f'Cog "{name.capitalize()}" reloaded.',
-                "", ctx
-            ))
-
-
+        for num, extension in enumerate(cogs):
+            if extension.startswith(name):
+                try:
+                    await ctx.send(embed = easyembed.error(
+                        f'Reloading cog "{extension.capitalize()}"',
+                        "", ctx
+                    ))
+                    self.bot.reload_extension(f'cogs.{extension}')
+                except Exception: 
+                    await ctx.send(embed = easyembed.error(
+                        "Couldn't reload",
+                        "", ctx
+                    ))
+                    return
+                else:
+                    await ctx.send(embed = easyembed.error(
+                        f'Cog "{extension.capitalize()}" reloaded.',
+                        "", ctx
+                    ))
+                    return
+            else:
+                if num == (len(cogs) - 1):
+                    await ctx.send(embed = easyembed.simple(
+                        'Not found', '', ctx
+                    ))
+                    return
 
 
 def setup(bot):
