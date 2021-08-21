@@ -1,6 +1,6 @@
 import json
 import requests as r
-import random
+import random, os
 
 class animals:
     @classmethod
@@ -51,3 +51,12 @@ class others:
         res = res.decode('utf-8').replace("'", '"')
         res = json.loads(res)
         return res['fact']
+    @classmethod
+    def foodish(self):
+        res = r.get('https://foodish-api.herokuapp.com/api/')
+        return res.json()['image']
+    @classmethod
+    def bitly(self, url):
+        res = r.post(url='https://api-ssl.bitly.com/v4/shorten', data = json.dumps({'long_url': url}), headers={"Authorization":os.getenv('BITLY_KEY')})
+        print(res.json())
+        return res.json().get('link')

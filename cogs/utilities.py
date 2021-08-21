@@ -10,6 +10,7 @@ import py_expression_eval as calc
 from deta import Deta
 from extras.easy_embed import easyembed
 import base64
+from extras.API_Requests import others
 deta = Deta(os.getenv('DATABASE_KEY'))
 userdb = deta.Base('user_data')
 guilddb = deta.Base('guild_data')
@@ -267,5 +268,9 @@ class Utilities(commands.Cog):
     @commands.command()
     async def ping(self, ctx):
         await ctx.send(embed = easyembed.simple('Bot response latency', f'{round(self.bot.latency * 1000)} milliseconds', ctx))
+    @commands.command()
+    async def shorten(self, ctx, url):
+        shorten = others.bitly(url)
+        await ctx.send(embed = easyembed.simple(title = 'Results', desc= shorten if shorten else 'Invalid URL', ctx= ctx))
 def setup(bot):
     bot.add_cog(Utilities(bot))

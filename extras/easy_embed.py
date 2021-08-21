@@ -8,8 +8,6 @@ db = deta.Base('user_data')
 
 
 class easyembed(discord.Embed):
-    default = Database().getembedcolor
-
     @classmethod
     def error(self, title, desc, ctx):
         id = str(ctx.author.id)
