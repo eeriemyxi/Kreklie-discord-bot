@@ -1,6 +1,7 @@
 import json
 import requests as r
 import random, os
+from extras.myxbitly import Errors, Myxbitly
 
 class animals:
     @classmethod
@@ -57,6 +58,6 @@ class others:
         return res.json()['image']
     @classmethod
     def bitly(self, url):
-        res = r.post(url='https://api-ssl.bitly.com/v4/shorten', data = json.dumps({'long_url': url}), headers={"Authorization":os.getenv('BITLY_KEY')})
-        print(res.json())
-        return res.json().get('link')
+        try: result = Myxbitly(key = os.getenv('BITLY_KEY')).shorten(url = url)
+        except Exception: return False
+        return result.link
