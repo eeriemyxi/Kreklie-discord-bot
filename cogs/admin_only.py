@@ -14,7 +14,7 @@ class AdminOnly(commands.Cog, command_attrs=dict(hidden=True)):
         cogs = [extension.name for extension in pkgutil.iter_modules(['cogs']) if extension.name != 'admin_only']
         if name.lower() == 'all':
             try:
-                await ctx.send(embed = easyembed.error(
+                msg = await ctx.send(embed = easyembed.error(
                     f'Reloading all cogs',
                     "", ctx
                 ))
@@ -25,12 +25,12 @@ class AdminOnly(commands.Cog, command_attrs=dict(hidden=True)):
                     except Exception as e: log(f'Failed to log cog {str(extension).capitalize()}. Error:\n{e}')
                     else: log(f'Reloaded cog: {str(extension).capitalize()}')
             except Exception: 
-                await ctx.send(embed = easyembed.error(
+                await msg.edit(embed = easyembed.error(
                     "Couldn't reload",
                     "", ctx
                 ))
             else:
-                await ctx.send(embed = easyembed.simple(
+                await msg.edit(embed = easyembed.simple(
                     'Reloaded all cogs. Logs:',
                     "\n".join(logs),
                     ctx

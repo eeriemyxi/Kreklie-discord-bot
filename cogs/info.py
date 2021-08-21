@@ -8,7 +8,9 @@ import typing
 class Information(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-
+    @commands.command()
+    async def test(self, ctx, arg,arg1):
+        pass
     @commands.command()
     async def userinfo(self,
                        ctx,
@@ -53,86 +55,64 @@ class Information(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def rolemembers(self, ctx, role: discord.Role = None):
-        if not role:
-            await ctx.send(embed=easyembed.error(
-                'Missing argument',
-                f'Type {ctx.prefix}help rolemembers to know how to use this commmand.',
-                ctx))
+    async def rolemembers(self, ctx, role: discord.Role):
+        if len(role.members) > 0:
+            text = ', '.join(['`' + str(i) + '`' for i in role.members])
+            if len(text) > 3170:
+                text = ", ".join(
+                    (text[0:3170]).split(',')[:-1]) + ', And more...'
         else:
-            if len(role.members) > 0:
-                text = ', '.join(['`' + str(i) + '`' for i in role.members])
-                if len(text) > 3170:
-                    text = ", ".join(
-                        (text[0:3170]).split(',')[:-1]) + ', And more...'
-            else:
-                text = '0 Members'
-            embed = discord.Embed(
-                color=easyembed.getcolor(ctx),
-                title=f'Members of the role "{role.name}"',
-                description=f'Total `{len(role.members)}`.\n{text}')
-            await ctx.send(embed=embed)
+            text = '0 Members'
+        embed = discord.Embed(
+            color=easyembed.getcolor(ctx),
+            title=f'Members of the role "{role.name}"',
+            description=f'Total `{len(role.members)}`.\n{text}')
+        await ctx.send(embed=embed)
 
     @commands.command()
-    async def roleinfo(self, ctx, role: discord.Role = None):
-        if not role:
-            await ctx.send(embed=easyembed.error(
-                'Missing argument',
-                f'Type {ctx.prefix}help roleinfo to know how to use this command.',
-                ctx))
-        else:
-            embed = discord.Embed(color=easyembed.getcolor(ctx),
-                                  title=f'Information about "{role.name}"')
-            embed.add_field(name='ID and Name',
-                            value=f'`{role.id}` | `{role.name}`',
-                            inline=False)
-            embed.add_field(name='Created at',
-                            value=role.created_at,
-                            inline=False)
-            embed.add_field(name='Mentionable', value=role.mentionable)
-            embed.add_field(name='Postition', value=str(role.position))
-            embed.add_field(name='Color HEX Code', value=str(role.color))
-            embed.set_thumbnail(
-                url=f"https://serux.pro/rendercolour?hex={str(role.color)[1:]}"
-            )
-            await ctx.send(embed=embed)
+    async def roleinfo(self, ctx, role: discord.Role):
+        embed = discord.Embed(color=easyembed.getcolor(ctx),
+                                title=f'Information about "{role.name}"')
+        embed.add_field(name='ID and Name',
+                        value=f'`{role.id}` | `{role.name}`',
+                        inline=False)
+        embed.add_field(name='Created at',
+                        value=role.created_at,
+                        inline=False)
+        embed.add_field(name='Mentionable', value=role.mentionable)
+        embed.add_field(name='Postition', value=str(role.position))
+        embed.add_field(name='Color HEX Code', value=str(role.color))
+        embed.set_thumbnail(
+            url=f"https://serux.pro/rendercolour?hex={str(role.color)[1:]}"
+        )
+        await ctx.send(embed=embed)
 
     @commands.command()
-    async def emojiinfo(self, ctx, emo: discord.Emoji = None):
-        if not emo:
-            await ctx.send(embed=easyembed.error(
-                'Missing argument',
-                'Please provide an emote to show information about.', ctx))
-        else:
-            embed = discord.Embed(color=easyembed.getcolor(ctx),
-                                  title="Emoji Information")
-            embed.add_field(name='Emoji ID', value=emo.id, inline=True)
-            embed.add_field(name='Name', value=emo.name, inline=True)
-            embed.add_field(name='Created at',
-                            value=emo.created_at,
-                            inline=True)
-            embed.add_field(name='Server it belongs to (Name and ID)',
-                            value=f"{emo.guild} | {emo.guild.id}",
-                            inline=False)
-            embed.add_field(name='Available for use?',
-                            value=emo.available,
-                            inline=True)
-            embed.add_field(name='URL',
-                            value=f'[Click to open]({emo.url})',
-                            inline=False)
-            embed.set_thumbnail(url=emo.url)
-            await ctx.send(embed=embed)
+    async def emojiinfo(self, ctx, emo: discord.Emoji):
+        embed = discord.Embed(color=easyembed.getcolor(ctx),
+                                title="Emoji Information")
+        embed.add_field(name='Emoji ID', value=emo.id, inline=True)
+        embed.add_field(name='Name', value=emo.name, inline=True)
+        embed.add_field(name='Created at',
+                        value=emo.created_at,
+                        inline=True)
+        embed.add_field(name='Server it belongs to (Name and ID)',
+                        value=f"{emo.guild} | {emo.guild.id}",
+                        inline=False)
+        embed.add_field(name='Available for use?',
+                        value=emo.available,
+                        inline=True)
+        embed.add_field(name='URL',
+                        value=f'[Click to open]({emo.url})',
+                        inline=False)
+        embed.set_thumbnail(url=emo.url)
+        await ctx.send(embed=embed)
 
     @commands.command(usage=':emoji:')
-    async def emoji(self, ctx, emo: discord.Emoji = None):
-        if not emo:
-            await ctx.send(embed=easyembed.error(
-                'Missing argument', 'Please provide an emote to enlarge.', ctx)
-                           )
-        else:
-            embed = discord.Embed(color=easyembed.getcolor(ctx),
-                                  title='Enlarge emoji').set_image(url=emo.url)
-            await ctx.send(embed=embed)
+    async def emoji(self, ctx, emo: discord.Emoji):
+        embed = discord.Embed(color=easyembed.getcolor(ctx),
+                                title='Enlarge emoji').set_image(url=emo.url)
+        await ctx.send(embed=embed)
 
     @commands.command(description='Get information about the current server.')
     async def serverinfo(self, ctx):

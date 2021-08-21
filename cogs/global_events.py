@@ -15,35 +15,6 @@ class Events(commands.Cog):
         self.client = client
 
     @commands.Cog.listener()
-    async def on_message_delete(self, ctx):
-        if ctx.author.bot: return
-        if check := userdb.get(str(ctx.author.id)):
-            if 'ghostping' in check['settings'] and check['settings'][
-                    'ghostping'] == 'off':
-                return
-        mentions = []
-        for mention in ctx.raw_mentions:
-            if mention == ctx.author.id: continue
-            if check := userdb.get(str(mention)):
-                if 'ghostping' in check['settings'] and check['settings'][
-                        'ghostping'] == 'off':
-                    continue
-                else:
-                    mentions.append(mention)
-            else:
-                user = self.client.get_user(mention)
-                if user.bot: continue
-                else: mentions.append(mention)
-        if len(mentions) <= 0: return
-        mentions = ', '.join([f'<@{i}>' for i in list(set(mentions))])
-        embed = discord.Embed(
-            color=easyembed.getcolor(ctx=ctx),
-            title=f'{str(ctx.author)}',
-            description=f'Ghost pinged {mentions}').set_footer(
-                text=f'You can turn this off. Type: kk help settings')
-        await ctx.channel.send(embed=embed)
-
-    @commands.Cog.listener()
     async def on_ready(self):
         print('Ready.')
 
@@ -60,10 +31,7 @@ class Events(commands.Cog):
                                                title='Not found',
                                                description=f'Role not found.'))
         elif isinstance(error, MissingRequiredArgument):
-            await ctx.send(embed=easyembed.error(
-                'Missing required argument.',
-                'Please have a look at the message below.', ctx))
-            await ctx.send_help(ctx.command)
+            await ctx.send(embed=discord.Embed(color = easyembed.getcolor(ctx),title = 'Missing required argument', description = f'Something is missing. Please have a look at the message below. You forgot to include `{error.param}`').add_field(name = 'How to use it: ', value = f"{ctx.prefix}{ctx.command} {ctx.command.signature}"))
         elif isinstance(error, CheckFailure):
             pass
         else:

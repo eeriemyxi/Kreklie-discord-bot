@@ -19,6 +19,35 @@ class Utilities(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    @commands.Cog.listener() # Ghost ping detection
+    async def on_message_delete(self, ctx):
+        if ctx.author.bot: return
+        if check := userdb.get(str(ctx.author.id)):
+            if 'ghostping' in check['settings'] and check['settings'][
+                    'ghostping'] == 'off':
+                return
+        mentions = []
+        for mention in ctx.raw_mentions:
+            if mention == ctx.author.id: continue
+            if check := userdb.get(str(mention)):
+                if 'ghostping' in check['settings'] and check['settings'][
+                        'ghostping'] == 'off':
+                    continue
+                else:
+                    mentions.append(mention)
+            else:
+                user = self.client.get_user(mention)
+                if user.bot: continue
+                else: mentions.append(mention)
+        if len(mentions) <= 0: return
+        mentions = ', '.join([f'<@{i}>' for i in list(set(mentions))])
+        embed = discord.Embed(
+            color=easyembed.getcolor(ctx=ctx),
+            title=f'{str(ctx.author)}',
+            description=f'Ghost pinged {mentions}').set_footer(
+                text=f'You can turn this off. Type: kk help settings')
+        await ctx.channel.send(embed=embed)
+
     @commands.command(description='Calculator')
     async def calc(self, ctx, equation):
         result = calc.Parser().parse(equation).evaluate({})
