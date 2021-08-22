@@ -118,7 +118,7 @@ class Fun(commands.Cog):
                 embed=easyembed.simple('AHAHAAHA', 'YOU CANT HACK ME', ctx))
             return
         percent_seq = sorted(
-            random.sample(list(range(1, 100)), random.randint(8, 15)))
+            random.sample(list(range(1, 99)), random.randint(8, 15)))
         percent_seq.append(100)
         msg = await ctx.send(
             embed=easyembed.simple(f'Hacking {user.name}!',
